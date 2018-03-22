@@ -57,6 +57,7 @@ def shape_factor_tlambda(tlambda):
         L = 0.22 + 1.402*tlambda + 0.018*tlambda/(0.107+tlambda)
         H = 2.088 + 0.0731/(0.14+tlambda)
     else:
+        print tlambda
         raise ValueError("tlambda must be in the interval [-0.1 and 0.1]")
 
     return H, L
@@ -94,13 +95,16 @@ def shape_factor_1(H):
 
 def edge_velocity_integrand(x, args):
 
+    spl = args[2]
+
     # check if flat plate
     if args[0]:
         ve = args[1] # if flat plate, ve is freestreem velocity
-
+    else:
+        ve = spl(x)
     return ve
 
-def thwaite_boundary(x, L, v0, ve, ve0, nu, flat_plate=True, dve_dx0=0.):
+def thwaite_boundary(x, L, v0, ve, ve0, nu, flat_plate=True, dve_dx0=0., spl=None):
 
     x_star = x/L
     ve_star = ve/v0
@@ -113,26 +117,25 @@ def thwaite_boundary(x, L, v0, ve, ve0, nu, flat_plate=True, dve_dx0=0.):
     if flat_plate:
         theta0 = 0.
     else:
-        if dve_dx0 == 0.0:
-            raise ValueError('dve_dx0 must be specified if not solving a flat plate')
 
         theta0 = np.sqrt(0.075*nu/(dve_dx0))
 
     #initialize disp thickness
     theta = np.zeros_like(x_star)
     delta_star = np.zeros_like(x_star)
+    tlambda = np.zeros_like(x_star)
     for i in np.arange(0, x_star.size):
-        result = quad(edge_velocity_integrand, 0., x_star[i], np.array([flat_plate, v0_star]))
+        result = quad(edge_velocity_integrand, 0., x_star[i], np.array([flat_plate, ve0_star[i], spl]))
         ve_integral = result[0]
         # displacement thickness
-        theta[i] = L*np.sqrt((0.45)/(Rel*ve_star**6)*ve_integral+((theta0/L)**2)*(ve0_star/ve_star)**6)
+        theta[i] = L*np.sqrt((0.45)/(Rel*ve_star[i]**6)*ve_integral+((theta0[i]/L)**2)*(ve0_star[i]/ve_star[i])**6)
 
         # Reynold's number based on displacement thickness
         Ret = reynolds_number(v0, L, nu=nu)
 
-        tlambda = (theta[i]**2/nu)*dve_dx0
+        tlambda[i] = (theta[i]**2/nu)*dve_dx0[i]
 
-        shape_factor, _ = shape_factor_tlambda(tlambda)
+        shape_factor, _ = shape_factor_tlambda(tlambda[i])
 
         delta_star[i] = shape_factor*theta[i]
 
