@@ -260,8 +260,8 @@ def plot_cl_cd(c, tmax):
     plt.figure()
     plt.plot(cd_ta, cl_ta, colors[0], label="Thin Airfoil Theory")
     plt.plot(cd_s, cl_s, colors[1], label="Shock Theory")
-    plt.xlabel("$c_l$")
-    plt.ylabel("$c_d$")
+    plt.ylabel("$c_l$")
+    plt.xlabel("$c_d$")
     plt.legend(loc=3, frameon=False)
     plt.savefig("drag-polar-tmax%.2f.pdf" % tmax, transparent=True)
 
@@ -281,8 +281,8 @@ def plot_cl_cd(c, tmax):
 if __name__ == "__main__":
 
     c = 1.0
-    # tmax = 0.01 * c
-    tmax = 0.05 * c
+    tmax = 0.01 * c
+    # tmax = 0.05 * c
 
     plot_cl_cd(c, tmax)
 

@@ -16,27 +16,33 @@ def plot_airfoil():
 
     import matplotlib.pyplot as plt
 
-    data = np.loadtxt('rae2822-geom.txt')
+    data = np.loadtxt('rae2822-geom2.txt')
     x = data[:, 0]
     y = data[:, 1]
 
-    plt.scatter(x, y)
+    plt.plot(x, y)
     plt.axis('equal')
     plt.show()
 
 def complete_points():
 
     data = np.loadtxt('rae2822-geom.txt')
-    x = data[:, 0]
-    y = data[:, 1]
-    z = np.zeros(x.size)
+    n = data.shape[0]
+    x1 = data[:n/2, 0]
+    x2 = data[n/2:, 0]
+    x = np.hstack([x1[:-1],np.flip(x2, 0)])
+    y1 = data[:n/2, 1]
+    y2 = data[n/2:, 1]
+    y = np.hstack([y1[:-1], np.flip(y2, 0)])
+    z = np.zeros(n-1)
 
-    np.savetxt('rae2822-geom.txt', np.c_[x, y, z], header='x, y, z')
+    np.savetxt('rae2822-geom2.txt', np.c_[x, y, z], header='x, y, z')
 
 
 if __name__ == "__main__":
 
     # altitude = 18300 m
+    complete_points()
     plot_airfoil()
 
     c = 1.
