@@ -24,10 +24,19 @@ def plot_airfoil():
     plt.axis('equal')
     plt.show()
 
+def complete_points():
+
+    data = np.loadtxt('rae2822-geom.txt')
+    x = data[:, 0]
+    y = data[:, 1]
+    z = np.zeros(x.size)
+
+    np.savetxt('rae2822-geom.txt', np.c_[x, y, z], header='x, y, z')
+
+
 if __name__ == "__main__":
 
     # altitude = 18300 m
-
     plot_airfoil()
 
     c = 1.
