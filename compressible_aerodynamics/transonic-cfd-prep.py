@@ -16,7 +16,7 @@ def plot_airfoil():
 
     import matplotlib.pyplot as plt
 
-    data = np.loadtxt('rae2822-geom2.txt')
+    data = np.loadtxt('rae2822-geom2.csv', delimiter=',')
     x = data[:, 0]
     y = data[:, 1]
 
@@ -36,7 +36,7 @@ def complete_points():
     y = np.hstack([y1[:-1], np.flip(y2, 0)])
     z = np.zeros(n-1)
 
-    np.savetxt('rae2822-geom2.txt', np.c_[x, y, z], header='x, y, z')
+    np.savetxt('rae2822-geom2.csv', np.c_[x, y, z], delimiter=', ', header='x, y, z')
 
 
 if __name__ == "__main__":
