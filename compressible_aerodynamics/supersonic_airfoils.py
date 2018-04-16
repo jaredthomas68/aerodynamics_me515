@@ -230,7 +230,7 @@ def plot_cl_cd(c, tmax):
     P1 = 1.01325E5  # N/m**2
 
     num = 500
-    alpha = np.linspace(-15., 15., num) * np.pi / 180.
+    alpha = np.linspace(5., 15., num) * np.pi / 180.
     cl_ta = np.zeros(num)
     cd_ta = np.zeros(num)
     xcp_ta = np.zeros(num)
@@ -243,39 +243,48 @@ def plot_cl_cd(c, tmax):
         cl_s[i], cd_s[i], xcp_s[i] = get_coefficients_shock_theory(d, P1, M1, gamma, tmax, c, alpha[i])
 
     colors = ['r', 'b']
-    labels = ['$c_l$ Thin Airfoil Theory', '$c_d$ Thin Airfoil Theory', '$c_l$ Shock Theory', '$c_d$ Shock Theory']
+    labels = ['$c_l$ Thin Airfoil Theory', '$c_d$ Thin Airfoil Theory', '$c_l$ Shock-Expansion Theory', '$c_d$ Shock-Expansion Theory']
     # alpha = alpha*180./np.pi
-    plt.plot(alpha, cl_ta, '--'+colors[0])
-    # plt.plot(alpha, cd_ta, colors[0])
-    plt.plot(alpha, cl_s, '--'+colors[1])
-    # plt.plot(alpha, cd_s, colors[1])
+    plt.plot(alpha*180./np.pi, cl_ta, '--'+colors[0], label=labels[0])
+    plt.plot(alpha*180./np.pi, cd_ta, colors[0], label=labels[1])
+    plt.plot(alpha*180./np.pi, cl_s, '--'+colors[1], label=labels[2])
+    plt.plot(alpha*180./np.pi, cd_s, colors[1], label=labels[3])
 
     plt.xlabel('Angle of Attack (deg)')
     plt.ylabel('Coefficient Value')
 
-    plt.legend(labels, loc=4, frameon=False)
-    plt.savefig("cl-tmax%.2f.pdf" % tmax, transparent=True)
+    plt.legend(loc=4, frameon=False)
+    plt.savefig("cl-tmax0p0%i.pdf" % (tmax*100), transparent=True)
 
     # drag polar
     plt.figure()
     plt.plot(cd_ta, cl_ta, colors[0], label="Thin Airfoil Theory")
-    plt.plot(cd_s, cl_s, colors[1], label="Shock Theory")
+    plt.plot(cd_s, cl_s, colors[1], label="Shock-Expansion Theory")
     plt.ylabel("$c_l$")
     plt.xlabel("$c_d$")
-    plt.legend(loc=3, frameon=False)
-    plt.savefig("drag-polar-tmax%.2f.pdf" % tmax, transparent=True)
+    plt.legend(loc=4, frameon=False)
+    plt.savefig("drag-polar-tmax0p0%i.pdf" % (tmax*100), transparent=True)
 
     # center of pressure
     plt.figure()
-    plt.plot(alpha, xcp_ta, label="Thin Airfoil Theory")
-    plt.plot(alpha, xcp_s, label="Shock Theory")
+    plt.plot(alpha*180./np.pi, xcp_ta, label="Thin Airfoil Theory")
+    plt.plot(alpha*180./np.pi, xcp_s, label="Shock-Expansion Theory")
     plt.xlabel('Angle of Attack (deg)')
     plt.ylabel('$X_{cp}$ (percent of chord)')
     plt.ylim([0., 1.])
     plt.legend(frameon=False)
-    plt.savefig("center-of-pressure-tmax%.2f.pdf" % tmax, transparent=True)
+    plt.savefig("center-of-pressure-tmax0p0%i.pdf" % (tmax*100), transparent=True)
 
     plt.show()
+
+    lcs_t = (cl_ta[num/2]-cl_ta[num/2-1])/(alpha[num/2]-alpha[num/2-1])
+    lcs_s = (cl_s[num/2]-cl_s[num/2-1])/(alpha[num/2]-alpha[num/2-1])
+
+    print "lift-curve slope t: ", lcs_t
+    print "lift-curve slope s: ", lcs_s
+
+    print "aerodynamic center t:, ", np.average(xcp_ta)
+    print "aerodynamic center s:, ", np.average(xcp_s)
 
 
 if __name__ == "__main__":
